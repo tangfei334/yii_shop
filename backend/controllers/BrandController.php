@@ -4,8 +4,9 @@ namespace backend\controllers;
 
 use backend\models\Brand;
 use yii\data\Pagination;
+use yii\helpers\Json;
 use yii\web\UploadedFile;
-
+use crazyfd\qiniu\Qiniu;
 class BrandController extends \yii\web\Controller
 {
     public function actionIndex()
@@ -35,27 +36,11 @@ class BrandController extends \yii\web\Controller
         $request=\Yii::$app->request;
         //搬到提交方式
         if($request->isPost){
-            $imgPath="";
             //绑定数据
             $models->load($request->post());
-            //图片的验证
-            //1 ，得到图片
-            $models->img=UploadedFile::getInstance($models,'img');
-//            var_dump($models);exit;
-            if($models->img!==null){
-
-                //2.上传到路径
-                $imgPath="images/".time().".".$models->img->extension;
-//            var_dump($imgPath);exit;
-
-                //3
-                $models->img->saveAs($imgPath,false);
-            }
-
 //            var_dump($models);exit;
             //后台验证
             if($models->validate()){
-                $models->logo=$imgPath;
                 if($models->save(false)){
                     //提交
                     \Yii::$app->session->setFlash('success','添加成功');
@@ -67,10 +52,7 @@ class BrandController extends \yii\web\Controller
                 var_dump($models->errors);exit;
             }
 
-
-
         }
-
         return $this->render("add",compact("models"));
     }
     public function actionEdit($id){
@@ -79,33 +61,13 @@ class BrandController extends \yii\web\Controller
         $request=\Yii::$app->request;
         //搬到提交方式
         if($request->isPost){
-            $imgPath="";
             //绑定数据
             $models->load($request->post());
-            //图片的验证
-            //1 ，得到图片
-            $models->img=UploadedFile::getInstance($models,'img');
-//            var_dump($models);exit;
-            if($models->img!==null){
-
-                //2.上传到路径
-                $imgPath="images/".time().".".$models->img->extension;
-//            var_dump($imgPath);exit;
-
-                //3
-                $models->img->saveAs($imgPath,false);
-            }
-
-//            var_dump($models);exit;
             //后台验证
             if($models->validate()){
 
-                //图片回线  三元
-//                $models->logo=$imgPath?:$models->logo;
 
-                if($imgPath){
-                    $models->logo=$imgPath;
-                }
+
                ;
                 if($models->save(false)){
                     \Yii::$app->session->setFlash('success','编辑成功');
@@ -128,5 +90,75 @@ class BrandController extends \yii\web\Controller
         \Yii::$app->session->setFlash('success','删除成功');
         return $this->redirect(["index"]);
     }
+
+    //upload图片的上传
+    public function actionUpload()
+    {
+        switch (\Yii::$app->params['uploadType']){
+
+            case '127.0.0.1':
+                //通过name找到图片
+                $fileobj = UploadedFile::getInstanceByName('file');
+//        var_dump($file);
+                //移动临时文件到web目录
+                if ($fileobj !== null){
+                    //拼路径
+                    $filePath="images/".time().'.'.$fileobj->extension;
+
+                    if ($fileobj->saveAs($filePath,false)) {
+                        // 正确时， 其中 attachment 指的是保存在数据库中的路径，url 是该图片在web可访问的地址
+//                {"code": 0, "url": "http://domain/图片地址", "attachment": "图片地址"}
+                        $yes=[
+                            'code'=>0,
+                            'url'=>'/'.$filePath,
+                            'attachment'=>$filePath
+                        ];
+                        //返回json数据
+                        return Json::encode($yes);
+                    }else{
+
+                        //错误
+                        $result=[
+                            'code'=>1,
+                            'msg'=>'error'
+                        ];
+
+                        return Json::encode($result);
+                    }
+                }
+                //七牛
+            case 'qiniu':
+                $ak = 'g55WlYZmAcfjlQDw4CgilVkj-JiDkt6I7RtcPQM9';
+                $sk = '2XVES6fEUq2aK14htnOjSVf-7cOFd-2RHfknBjcy';
+                $domain = 'http://p5obj1i27.bkt.clouddn.com';//域名
+                $bucket = 'php1108';//空间名称
+                $zone = 'south_china';
+                //创建七牛云对象
+                $qiniu = new Qiniu($ak, $sk,$domain, $bucket,$zone);
+                $key = time();
+//        拼路径
+                $key = $key.strtolower(strrchr($_FILES['file']['name'], '.'));
+//        var_dump($key);exit;
+
+                $qiniu->uploadFile($_FILES['file']['tmp_name'],$key);
+//        var_dump($qiniu);exit;
+                $url = $qiniu->getLink($key);
+
+
+                $yes=[
+                    'code'=>0,
+                    'url'=>$url,
+                    'attachment'=>$url,
+
+                ];
+                //返回json数据
+                return Json::encode($yes);
+
+        }
+
+}
+
+
+
 
 }

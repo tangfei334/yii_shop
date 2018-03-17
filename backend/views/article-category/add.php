@@ -8,10 +8,9 @@
 /** @var $this \yii\web\View */
 $from=\yii\bootstrap\ActiveForm::begin();
 echo $from->field($models,'name');
-echo $from->field($models,'logo')->widget(\manks\FileInput::className(),[]);
 echo $from->field($models,'sort');
 echo $from->field($models,'status')->inline()->radioList([0=>'上线',1=>'下线'],['value'=>1]);
 echo $from->field($models,'intro')->textarea();
-//echo $from->field($models,'code')->widget(\yii\captcha\Captcha::className());
+echo $from->field($models,'is_help')->inline()->radioList([0=>'是',1=>'否'],['value'=>1]);
 echo \yii\bootstrap\Html::submitButton("提交",['class'=>'btn btn-info']);
 $from=\yii\bootstrap\ActiveForm::end();

@@ -5,26 +5,24 @@ namespace backend\models;
 use Yii;
 
 /**
- * This is the model class for table "brand".
+ * This is the model class for table "article_category".
  *
  * @property int $id
  * @property string $name 名称
- * @property string $logo 图像
- * @property int $sort 排序
- * @property int $status 排序
  * @property string $intro 简介
+ * @property int $status 状态
+ * @property int $sort 排序
+ * @property int $is_help 是否需要帮助
  */
-class Brand extends \yii\db\ActiveRecord
+class ArticleCategory extends \yii\db\ActiveRecord
 {
-
     public static $status=[0=>'上线',1=>'下线'];
-    public $code;
+    public static $is_help=[0=>'是',1=>'否'];
     public function rules()
     {
         return [
-            [['name', 'sort', 'intro','logo'], 'required'],
-            [['status'],'safe'],
-//            [['code'],'captcha']
+            [['name', 'intro', 'sort'], 'required'],
+            [['status','is_help'],'safe']
         ];
     }
 
@@ -36,11 +34,10 @@ class Brand extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => '名称',
-            'logo' => '图像',
-            'sort' => '排序',
-            'status' => '排序',
             'intro' => '简介',
-//            'code'=>'验证码',
+            'status' => '状态',
+            'sort' => '排序',
+            'is_help' => '是否需要帮助',
         ];
     }
 }
