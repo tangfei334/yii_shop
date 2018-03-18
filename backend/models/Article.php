@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
  */
 class Article extends \yii\db\ActiveRecord
 {
-  
+
     public function rules()
     {
         return [
