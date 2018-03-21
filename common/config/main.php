@@ -1,7 +1,7 @@
 <?php
 return [
     'aliases' => [
-        'timezone'=>'RBC',
+        'timeZone' => 'PRC',
         'language' => 'zh-CN',
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',

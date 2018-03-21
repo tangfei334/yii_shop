@@ -7,6 +7,7 @@ $params = array_merge(
 );
 
 return [
+    'timeZone' => 'PRC',
     'language' => 'zh-CN',
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
@@ -25,7 +26,8 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+//            'identityClass' => 'common\models\User',
+            'identityClass' =>\backend\models\Admin::className(),
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],

@@ -95,14 +95,19 @@ class SiteController extends Controller
         if($request->isPost){
             //绑定数据
             $model->load($request->post());
-//            var_dump($model->username);exit;
+//            var_dump($model->password);exit;
             //验证用户名
-            $admin=Admin::find()->where(['name'=>$model->username])->one();
+            $admin=Admin::find()->where(['username'=>$model->username])->one();
             if($admin){
                 $pwd=Admin::find()->where(['password'=>$model->password])->one();
+
+                $admin->last_login_ip=$_SERVER['REMOTE_ADDR'];
+                $admin->last_login_time=time();
+//                var_dump($admin->last_login_ip);exit;
+              $admin->save();
                 if($pwd){
                     Yii::$app->session->setFlash('success','登录成功');
-                    return $this->redirect(['goods/index']);
+                    return $this->redirect(['/admin/index']);
                 }else{
 
                     return $this->redirect(['site/login']);

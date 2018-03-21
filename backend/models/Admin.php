@@ -3,6 +3,8 @@
 namespace backend\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "admin".
@@ -20,11 +22,27 @@ use Yii;
  */
 class Admin extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            [
+
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['add_time'],
+//                        ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                // if you're using datetime instead of UNIX timestamp:
+                // 'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
     public function rules()
     {
         return [
-            [['name', 'password', 'salt', 'email'], 'required'],
-            [['name'], 'unique'],
+            [['username', 'password', 'salt', 'email','last_login_ip','last_login_time'], 'safe'],
+            [['username'], 'unique'],
         ];
     }
 
@@ -35,7 +53,7 @@ class Admin extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => '姓名',
+            'username' => '姓名',
             'password' => '密码',
             'salt' => '盐',
             'email' => '邮箱',

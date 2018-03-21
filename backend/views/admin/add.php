@@ -6,7 +6,7 @@
  * Time: 9:46
  */
 $form=\yii\bootstrap\ActiveForm::begin();
-echo $form->field($models,'name');
+echo $form->field($models,'username');
 echo $form->field($models,'password');
 echo $form->field($models,'salt');
 echo $form->field($models,'email');
