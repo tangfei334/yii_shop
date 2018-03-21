@@ -83,7 +83,7 @@ class CategoryController extends \yii\web\Controller
                 //如果parent_id=0 添加一级分类
                 if($models->parent_id==0){
                     //创建一个一级分类
-                    $models->makeRoot();
+                    $models->save();
                     \Yii::$app->session->setFlash('success','创建一级分类:'.$models->name.'成功');
                     return  $this->refresh();
                 }else{
@@ -93,9 +93,10 @@ class CategoryController extends \yii\web\Controller
                     //把新的分类加入到父类中
                     $models->prependTo($modelsParent);
 
+
                     \Yii::$app->session->setFlash('success',"创建{$modelsParent->name}级分类的子分类:".$models->name.'成功');
                     //刷新
-                    return  $this->refresh();
+                    return $this->redirect(['index']);
 
                 }
 
@@ -109,9 +110,14 @@ class CategoryController extends \yii\web\Controller
         return $this->render('add',compact('models','modelJson'));
     }
     public function actionDelete($id){
-        $model=Category::findOne($id)->delete();
-        \Yii::$app->session->setFlash('success','删除数据成功');
-        return $this->redirect(['index']);
+//        $model=Category::findOne($id)->delete();
+
+        if(Category::findOne($id)->deleteWithChildren()){
+            return $this->redirect(['index']);
+            \Yii::$app->session->setFlash('success','删除数据成功');
+        }
+
+//
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 /* @var $this yii\web\View */
 ?>
-<h1>category/index</h1>
+<h1>产品分类</h1>
 
 <p>
    <table class="table">

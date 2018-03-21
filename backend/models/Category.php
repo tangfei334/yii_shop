@@ -52,8 +52,8 @@ class Category extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name','intro'], 'required'],
-            [['parent_id'],'safe']
+            [['name','intro','parent_id'], 'required'],
+
 
         ];
     }

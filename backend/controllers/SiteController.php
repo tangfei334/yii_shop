@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\Admin;
 use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -74,21 +75,46 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+//        if (!Yii::$app->user->isGuest) {
+//            return $this->goHome();
+//        }
 
+//        $model = new LoginForm();
+//        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+//            return $this->goBack();
+//        } else {
+//            $model->password = '';
+//
+//            return $this->render('login', [
+//                'model' => $model,
+//            ]);
+//        }
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            $model->password = '';
+//        var_dump($model);exit;
+        $request=Yii::$app->request;
+        if($request->isPost){
+            //绑定数据
+            $model->load($request->post());
+//            var_dump($model->username);exit;
+            //验证用户名
+            $admin=Admin::find()->where(['name'=>$model->username])->one();
+            if($admin){
+                $pwd=Admin::find()->where(['password'=>$model->password])->one();
+                if($pwd){
+                    Yii::$app->session->setFlash('success','登录成功');
+                    return $this->redirect(['goods/index']);
+                }else{
 
-            return $this->render('login', [
-                'model' => $model,
-            ]);
+                    return $this->redirect(['site/login']);
+                }
+            }else{
+
+                return $this->redirect(['site/login']);
+            }
         }
+        return $this->render('login',compact('model'));
     }
+
 
     /**
      * Logout action.
