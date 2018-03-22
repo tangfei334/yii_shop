@@ -30,12 +30,40 @@
 # 登录管理
 #### 1：最后登录IP代码-> $_SERVER['REMOTE_ADDR']
 ####  2：分析字段。
+## 3：设计场景
+## 第一步
+            public  function scenarios()
+           {
+              $fuck= parent::scenarios(); //默认场景
+               $fuck['add']=['username','password'];
+               $fuck['edit']=['username','password'];
+               return $fuck;
+        
+           }
+## 第二步 设计规则
+     public function rules()
+        {
+            return [
+               [['username'],'required'],
+                [['password','status'],'safe','on'=>'edit'],
+                [['password'],'required','on'=>'add'],
+                [['username'], 'unique'],
+            ];
+        }
+##     第三步 设置 edit场景
+     $models->setScenario('edit');
+     
+###      赋值
+          $password=$models->password;
+###      三元判断
+      $models->password=$models->password?\Yii::$app->security->generatePasswordHash($models->password):$password;
+
 ## 需求
 1.	管理员增删改查
 2.	管理员登录和注销
 3.	自动登录(基于cookie)
 4.	促销管理(选做)
-- [x] ## 要点
+###  要点
 1.	创建admin表(在user表基础上添加最后登录时间和最后登录ip
 
 

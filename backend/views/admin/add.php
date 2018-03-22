@@ -8,11 +8,11 @@
 $form=\yii\bootstrap\ActiveForm::begin();
 echo $form->field($models,'username');
 echo $form->field($models,'password');
-echo $form->field($models,'salt');
-echo $form->field($models,'email');
-echo $form->field($models,'token');
+echo $form->field($models,'status')->inline()->radioList([0=>'下线',1=>'上线'],['value'=>1]);
+
+//echo $form->field($models,'token');
 //echo $form->field($models,'name');
-echo  \yii\bootstrap\Html::submitButton('注册',['class'=>'btn btn-info']);
+echo  \yii\bootstrap\Html::submitButton('提交',['class'=>'btn btn-info']);
 
 
 $form=\yii\bootstrap\ActiveForm::end();

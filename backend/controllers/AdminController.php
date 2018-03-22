@@ -7,7 +7,7 @@ use backend\models\LoginForm;
 use function Sodium\compare;
 use yii\web\IdentityInterface;
 
-class AdminController extends \yii\web\Controller implements IdentityInterface
+class AdminController extends \yii\web\Controller
 {
     public function actionIndex()
     {
@@ -17,6 +17,7 @@ class AdminController extends \yii\web\Controller implements IdentityInterface
     public function actionAdd(){
 
         $models=new Admin();
+        $models->setScenario('add');
         //判断提交方式
         $request=\Yii::$app->request;
         if($request->isPost){
@@ -24,6 +25,12 @@ class AdminController extends \yii\web\Controller implements IdentityInterface
             $models->load($request->post());
             //后台验证
             if($models->validate()){
+                 //密码加密
+//                var_dump($models->password);exit;
+                $models->password=\Yii::$app->security->generatePasswordHash($models->password);
+
+                //设置令牌 32 wei
+                $models->token=\Yii::$app->security->generateRandomString();
                 if($models->save()){
 
                     return $this->redirect(['index']);
@@ -40,79 +47,105 @@ class AdminController extends \yii\web\Controller implements IdentityInterface
 
         return $this->render('add',compact('models'));
     }
+    public function actionEdit($id){
 
-    /**
-     * @return string
-     */
-//    public function actionLogin(){
-//         //生成一个表单模型
-//        $models=new LoginForm();
-//        return $this->render('login',compact('models'));
-//    }
+        $models=Admin::findOne($id);
+        $models->setScenario('edit');
+        $password=$models->password;
+        //判断提交方式
+        $request=\Yii::$app->request;
+        if($request->isPost){
+            //绑定数据
+            $models->load($request->post());
+            //后台验证
+            if($models->validate()){
+                //三元
+                $models->password=$models->password?\Yii::$app->security->generatePasswordHash($models->password):$password;
+                //密码加密
+//                $models->password=\Yii::$app->security->generatePasswordHash($models->password);
+                if($models->save()){
 
+                    return $this->redirect(['index']);
+                }
+            }else{
 
-    /**
-     * Finds an identity by the given ID.
-     * @param string|int $id the ID to be looked for
-     * @return IdentityInterface the identity object that matches the given ID.
-     * Null should be returned if such an identity cannot be found
-     * or the identity is not in an active state (disabled, deleted, etc.)
-     */
-    public static function findIdentity($id)
-    {
-        return self::findIdentity($id);
+                var_dump($models->errors);exit;
+
+//                return $this->redirect(['admin/login']);
+            }
+
+        }
+        $models->password=null;
+        return $this->render('add',compact('models'));
+    }
+    public function actionDel($id){
+        $models=Admin::findOne($id)->delete();
+
+        return $this->redirect(['admin/index']);
+
     }
 
-    /**
-     * Finds an identity by the given token.
-     * @param mixed $token the token to be looked for
-     * @param mixed $type the type of the token. The value of this parameter depends on the implementation.
-     * For example, [[\yii\filters\auth\HttpBearerAuth]] will set this parameter to be `yii\filters\auth\HttpBearerAuth`.
-     * @return IdentityInterface the identity object that matches the given token.
-     * Null should be returned if such an identity cannot be found
-     * or the identity is not in an active state (disabled, deleted, etc.)
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        // TODO: Implement findIdentityByAccessToken() method.
-    }
 
-    /**
-     * Returns an ID that can uniquely identify a user identity.
-     * @return string|int an ID that uniquely identifies a user identity.
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+    public function actionLogin(){
 
-    /**
-     * Returns a key that can be used to check the validity of a given identity ID.
-     *
-     * The key should be unique for each individual user, and should be persistent
-     * so that it can be used to check the validity of the user identity.
-     *
-     * The space of such keys should be big enough to defeat potential identity attacks.
-     *
-     * This is required if [[User::enableAutoLogin]] is enabled.
-     * @return string a key that is used to check the validity of a given identity ID.
-     * @see validateAuthKey()
-     */
-    public function getAuthKey()
-    {
-        // TODO: Implement getAuthKey() method.
-    }
+        $model=new LoginForm();
+        $request=\Yii::$app->request;
+        if($request->isPost){
+            //绑定数据
+            $model->load($request->post());
+            //后台验证
+             if($model->validate()){
+                 //通过用户名找打对象
+                  $admin=Admin::findOne(['username'=>$model->username]);
+                  //判断用户是否存在
+                 if($admin){
+//                     var_dump($admin->password);exit;
+//                     var_dump(\Yii::$app->security->validatePassword($model->password,$admin->password));exit;
+                     //验证密码
+                     if(\Yii::$app->security->validatePassword($model->password,$admin->password)){
+                       //  验证密码成功
+                         \Yii::$app->user->login($admin,3600*24);
+                         //设置登录时间
+                         $admin->last_login_time=time();
+                         //用户ip
+                         $admin->last_login_ip=\Yii::$app->request->userIP;
+                        // $admin->save();
+                         //保存用户
+                         if($admin->save()){
+//                             echo 1;exit;
+                             \Yii::$app->session->setFlash('success','登录成功');
+                             return $this->redirect(['index']);
+                         }
 
-    /**
-     * Validates the given auth key.
-     *
-     * This is required if [[User::enableAutoLogin]] is enabled.
-     * @param string $authKey the given auth key
-     * @return bool whether the given auth key is valid.
-     * @see getAuthKey()
-     */
-    public function validateAuthKey($authKey)
+//var_dump($admin->errors);exit;
+                     }else{
+                         //密码错误
+                         $model->addError('password','用户名或密码错误');
+//                         return $this->redirect(['admin/login']);
+
+                     }
+
+
+                 }else{
+                     //用户不存在
+                     $model->addError('username','用户不存在');
+                 }
+
+
+             }else{
+
+                 var_dump($model->errors);exit;
+
+             }
+
+        }
+        return $this->render('login',compact('model'));
+    }
+//登录退出
+    public function actionLogout()
     {
-        // TODO: Implement validateAuthKey() method.
+        \Yii::$app->user->logout();
+
+        return $this->redirect(['admin/login']);
     }
 }
