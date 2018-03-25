@@ -24,7 +24,7 @@
                 'intro',
                 'tree',
                 'parent_id',
-                ['class' => 'yii\grid\ActionColumn']
+                ['class' => \yii\grid\ActionColumn::className()]
             ]
         ]); ?>
     </tr>

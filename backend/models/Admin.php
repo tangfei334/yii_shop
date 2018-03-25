@@ -23,11 +23,12 @@ use yii\web\IdentityInterface;
  */
 class Admin extends \yii\db\ActiveRecord implements IdentityInterface
 {
+//    public $roles;
    public  function scenarios()
    {
       $fuck= parent::scenarios(); //默认场景
-       $fuck['add']=['username','password'];
-       $fuck['edit']=['username','password'];
+       $fuck['add']=['username','password','status'];
+       $fuck['edit']=['username','password','status'];
        return $fuck;
 
    }
@@ -73,6 +74,8 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             'add_time' => '注册时间',
             'last_login_time' => '最后登录时间',
             'last_login_ip' => '最后登录ip',
+            'roles'=>'级别',
+            'status'=>'状态'
         ];
     }
 

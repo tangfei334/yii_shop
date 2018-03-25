@@ -10,128 +10,49 @@
             <div class="pull-left info">
                 <p>欢迎你 <?=Yii::$app->user->identity->username?></p>
 
-                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                <a href="#"><i class="fa fa-circle text-success"></i>在线</a>
             </div>
         </div>
 
         <!-- search form -->
-        <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..."/>
-              <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-        </form>
+<!--        <form action="#" method="get" class="sidebar-form">-->
+<!--            <div class="input-group">-->
+<!--                <input type="text" name="q" class="form-control" placeholder="Search..."/>-->
+<!--              <span class="input-group-btn">-->
+<!--                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i>-->
+<!--                </button>-->
+<!--              </span>-->
+<!--            </div>-->
+<!--        </form>-->
         <!-- /.search form -->
+        <?php
+        $callback = function($menu){
+            $data = json_decode($menu['data'], true);
+            $items = $menu['children'];
+            $return = [
+                'label' => $menu['name'],
+                'url' => [$menu['route']],
+            ];
+            //处理我们的配置
+            if ($data) {
+                //visible
+                isset($data['visible']) && $return['visible'] = $data['visible'];
+                //icon
+                isset($data['icon']) && $data['icon'] && $return['icon'] = $data['icon'];
+                //other attribute e.g. class...
+                $return['options'] = $data;
+            }
+            //没配置图标的显示默认图标
+            (!isset($return['icon']) || !$return['icon']) && $return['icon'] = 'fa fa-circle-o';
+            $items && $return['items'] = $items;
+            return $return;
+        };
+        //这里我们对一开始写的菜单menu进行了优化
+        echo dmstr\widgets\Menu::widget( [
+            'options' => ['class' => 'sidebar-menu' ,'data-widget'=> 'tree'],
+            'items' => \mdm\admin\components\MenuHelper::getAssignedMenu(Yii::$app->user->id, null, $callback),
+        ] ); ?>
 
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    ['label' => 'Menu Yii2', 'options' => ['class' => 'header']],
-                    [
-                        'label' => '品牌管理',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '品牌列表', 'icon' => 'file-code-o', 'url' => ['/brand/index'],],
-                            ['label' => '品牌添加', 'icon' => 'dashboard', 'url' => ['/brand/add'],],
-                            [
-                                'label' => 'Level One',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'circle-o',
-                                        'url' => '#',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    [
-                        'label' => '产品分类',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '产品列表', 'icon' => 'file-code-o', 'url' => ['/category/index'],],
-                            ['label' => '产品添加', 'icon' => 'dashboard', 'url' => ['/category/add'],],
-                            [
-                                'label' => 'Level One',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'circle-o',
-                                        'url' => '#',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    [
-                        'label' => '商品管理',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => '商品列表', 'icon' => 'file-code-o', 'url' => ['/goods/index'],],
-                            ['label' => '商品添加', 'icon' => 'dashboard', 'url' => ['/goods/add'],],
-                            [
-                                'label' => 'Level One',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'circle-o',
-                                        'url' => '#',
-                                        'items' => [
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
-                    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
-                    [
-                        'label' => 'Some tools',
-                        'icon' => 'share',
-                        'url' => '#',
-                        'items' => [
-                            ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
-                            ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
-                            [
-                                'label' => 'Level One',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'circle-o',
-                                        'url' => '#',
-                                        'items' => [
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        ) ?>
 
     </section>
 

@@ -3,8 +3,10 @@
 namespace backend\controllers;
 
 use backend\models\Admin;
+use backend\models\AuthItem;
 use backend\models\LoginForm;
 use function Sodium\compare;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 class AdminController extends \yii\web\Controller
@@ -14,15 +16,24 @@ class AdminController extends \yii\web\Controller
         $models=Admin::find()->all();
         return $this->render('index',compact('models'));
     }
+    //给角色添加用户
     public function actionAdd(){
 
         $models=new Admin();
+
         $models->setScenario('add');
+//         $auth= new  AuthItem();
+//        $adminRoles=AuthItem::find()->where("type=1")->asArray()->all();
+//        var_dump($adminRoles);exit;
+//         $adminArr=ArrayHelper::map($adminRoles,'name',"name");
+//         var_dump($adminArr);exit();
         //判断提交方式
         $request=\Yii::$app->request;
         if($request->isPost){
+
             //绑定数据
             $models->load($request->post());
+//            var_dump($models->roles[0]);exit;
             //后台验证
             if($models->validate()){
                  //密码加密
@@ -31,7 +42,15 @@ class AdminController extends \yii\web\Controller
 
                 //设置令牌 32 wei
                 $models->token=\Yii::$app->security->generateRandomString();
+
                 if($models->save()){
+                    //实例化组件对象
+//                    $auth=\Yii::$app->authManager;
+//                    //通过角色名称找到角色对象
+//                    $role=$auth->getRole($models->roles[0]);
+//                    $auth->assign($role,$models->id);
+//                    var_dump( $auth->assign($role,$models->id));exit;
+                    
 
                     return $this->redirect(['index']);
                 }
@@ -84,8 +103,6 @@ class AdminController extends \yii\web\Controller
         return $this->redirect(['admin/index']);
 
     }
-
-
     public function actionLogin(){
 
         $model=new LoginForm();
