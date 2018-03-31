@@ -39,7 +39,7 @@
         <td><?=$models->id?></td>
         <td><?=$models->name?></td>
         <td><?=$models->sn?></td>
-        <td><img src="/<?=$models->logo?>" height="30" width="30"></td>
+        <td><img src="<?=$models->logo?>" height="30" width="30"></td>
         <td><?=$models->category->name?></td>
         <td><?=$models->brand->name?></td>
         <td><?=$models->make_price?></td>

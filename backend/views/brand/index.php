@@ -21,6 +21,7 @@
         <td><?=$models->id?></td>
         <td><?=$models->name?></td>
         <td><?php
+//            $imgPath = strpos($models->logo,"http://")===false?"/".$models->logo:$models->logo;
             $imgPath=strpos($models->logo,'ttp://')?$models->logo:"/".$models->logo;
             echo \yii\bootstrap\Html::img($imgPath,['height'=>40]);
             ?></td>

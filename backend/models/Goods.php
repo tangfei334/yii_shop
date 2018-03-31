@@ -79,4 +79,13 @@ class Goods extends \yii\db\ActiveRecord
     public function getBrand(){
         return $this->hasOne(Brand::className(),['id'=>'brand_id']);
     }
+    //得到商品详情
+    public function getContent(){
+        return $this->hasOne(GoodsIntro::className(),['goods_id'=>'id']);
+    }
+    //得到商品所有图片
+    public function getImages(){
+
+        return $this->hasMany(GoodsLogo::className(),['goods_id'=>'id']);
+    }
 }
