@@ -115,51 +115,5 @@
 		</p>
 	</div>
 	<!-- 底部版权 end -->
-<!--    <script type="text/javascript" src="/js/jquery-1.8.3.min.js"></script>-->
-<!--    <script type="text/javascript" src="/layer/layer.js"></script>-->
-<!--    <script type="text/javascript">-->
-<!--        /**-->
-<!--         * ajax 登录-->
-<!--         *-->
-<!--         */-->
-<!--//        $(function () {-->
-<!--//            //1.监听注册按钮的点击市级-->
-<!--//            $('.login_btn').click(function () {-->
-<!--//-->
-<!--//                //2  提交数据注册-->
-<!--//                $.post('/user/reg',$('#reg').serialize(),function (result) {-->
-<!--//                    console.dir(result);-->
-<!--//                    if(result.status){-->
-<!--//                        alert("注册成功");-->
-<!--//                        self.location.href="/user/index/";-->
-<!--//                    }else {-->
-<!--//                        $.each(result.data,function (k,v) {-->
-<!--//                            layer.tips(v[0], '#'+k, {-->
-<!--//                                tips: [2, '#0FA6D8'], //还可配置颜色-->
-<!--//                                tipsMore: true-->
-<!--//                            });-->
-<!--////                            alert(v[0]);-->
-<!--//                            console.log(k);-->
-<!--//                        })-->
-<!--//                    }-->
-<!--//                },'json')-->
-<!--//            });-->
-<!--//-->
-<!--//        })-->
-<!--        $(function () {-->
-<!--            //1.监听注册按钮的点击事件-->
-<!--            $('.login_btn').click(function () {-->
-<!--//                console.dir(111);-->
-<!--                //2 提交数据登录-->
-<!--                $.post('/user/login',$('#login').serialize(),function (result) {-->
-<!--                    console.dir(result);-->
-<!--                    -->
-<!--                })-->
-<!--            })-->
-<!--            -->
-<!--        })-->
-
-
-<!--//    </script>-->
 </body>
 </html>

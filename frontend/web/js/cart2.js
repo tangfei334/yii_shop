@@ -3,6 +3,22 @@
 @作者：diamondwang
 @时间：2013年11月14日
 */
+
+$(function () {
+    //更改送货方式
+	$("input[name='delivery']").change(function () {
+		var price=$(this).attr('data-price');
+		// //找到运费id
+		$("#yunfei").text(price);
+		// 总金额
+		var allMoney=($("#tatalMoney").text()*1)+(price*1);
+        // allMoney=allMoney.toFixed(2);
+		$(".allMoney").text(allMoney);
+
+		console.dir($(".allMoney"));
+    })
+
+})
 $(function(){
 	//收货人修改
 	$("#address_modify").click(function(){

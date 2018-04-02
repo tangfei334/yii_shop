@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use backend\models\Goods;
+use frontend\components\shopCart;
 use frontend\models\Car;
 use function Sodium\add;
 use yii\helpers\ArrayHelper;
@@ -35,28 +36,29 @@ class GoodsController extends \yii\web\Controller
         if(\Yii::$app->user->isGuest){
             //得到cookie对象
 
-            $getCookie=\Yii::$app->request->cookies;
-//            //得到原来的车的数据
-            $cart=$getCookie->getValue('cart',[]);
-//            //判断是否存在
-//            var_dump( array_key_exists($id,$cart));exit;
-            if(array_key_exists($id,$cart)){
-                //已经存下 累加
-                $cart[$id]+=$amount;
-            }else{
-                   $cart[$id]=(int)$amount;
-            }
-//            var_dump($cart);exit;
-
-            //caoz创建cookie对象
-            $setCookie=\Yii::$app->response->cookies;
-            $cookie=new Cookie([
-                'name'=>'cart',
-                'value' => $cart
-            ]);
-
-            //2 设置cookie对象添加cookie
-            $setCookie->add($cookie);
+//            $getCookie=\Yii::$app->request->cookies;
+////            //得到原来的车的数据
+//            $cart=$getCookie->getValue('cart',[]);
+////            //判断是否存在
+////            var_dump( array_key_exists($id,$cart));exit;
+//            if(array_key_exists($id,$cart)){
+//                //已经存下 累加
+//                $cart[$id]+=$amount;
+//            }else{
+//                   $cart[$id]=(int)$amount;
+//            }
+////            var_dump($cart);exit;
+//
+//            //caoz创建cookie对象
+//            $setCookie=\Yii::$app->response->cookies;
+//            $cookie=new Cookie([
+//                'name'=>'cart',
+//                'value' => $cart
+//            ]);
+//
+//            //2 设置cookie对象添加cookie
+//            $setCookie->add($cookie);
+            (new shopCart())->add($id,$amount)->save();
 
         }else{
             //  登录保存数据库
@@ -81,8 +83,6 @@ class GoodsController extends \yii\web\Controller
         if(\Yii::$app->user->isGuest){
             //从cookie中取出购物车的数据
             $cart=\Yii::$app->request->cookies->getValue('cart',[]);
-//            var_dump(array_key_exists($cart));exit;
-//            var_dump(array_keys($cart));exit;
 
             $goodIds=array_keys($cart);
             //取购物车的所有商品
@@ -105,19 +105,20 @@ class GoodsController extends \yii\web\Controller
     }
     public function actionUpdateCart($id,$amount){
         if(\Yii::$app->user->isGuest){
-            $cart=\Yii::$app->request->cookies->getValue('cart',[]);
-            //修改对应的数据
-            $cart[$id]=$amount;
-            //把cart存到购物车中
-
-            $setCookie=\Yii::$app->response->cookies;
-            $cookie=new Cookie([
-                'name'=>'cart',
-                'value' => $cart
-            ]);
+//            $cart=\Yii::$app->request->cookies->getValue('cart',[]);
+//            //修改对应的数据
+//            $cart[$id]=$amount;
+//            //把cart存到购物车中
+//
+//            $setCookie=\Yii::$app->response->cookies;
+//            $cookie=new Cookie([
+//                'name'=>'cart',
+//                'value' => $cart
+//            ]);
 
             //2 设置cookie对象添加cookie
-            $setCookie->add($cookie);
+//            $setCookie->add($cookie);
+            (new shopCart())->update($id,$amount)->save();
         }else{
             //登录
             $cart_goods=Car::find()->where(['goods_id'=>$id,'user_id'=>\Yii::$app->user->id])->one();
@@ -129,19 +130,20 @@ class GoodsController extends \yii\web\Controller
     }
     public function actionDelCart($id){
         if(\Yii::$app->user->isGuest){
-            $cart=\Yii::$app->request->cookies->getValue('cart',[]);
-            //修改对应的数据
-            unset($cart[$id]);
-            //把cart存到购物车中
-
-            $setCookie=\Yii::$app->response->cookies;
-            $cookie=new Cookie([
-                'name'=>'cart',
-                'value' => $cart
-            ]);
+//            $cart=\Yii::$app->request->cookies->getValue('cart',[]);
+//            //修改对应的数据
+//            unset($cart[$id]);
+//            //把cart存到购物车中
+//
+//            $setCookie=\Yii::$app->response->cookies;
+//            $cookie=new Cookie([
+//                'name'=>'cart',
+//                'value' => $cart
+//            ]);
 
             //2 设置cookie对象添加cookie
-            $setCookie->add($cookie);
+//            $setCookie->add($cookie);
+            (new shopCart())->del($id)->save();
             return Json::encode([
                'status'=>1,
                 'msg'=>'删除成功'
